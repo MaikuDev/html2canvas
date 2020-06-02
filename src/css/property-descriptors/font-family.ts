@@ -12,7 +12,21 @@ export const fontFamily: IPropertyListDescriptor<FontFamily> = {
     prefix: false,
     type: PropertyDescriptorParsingType.LIST,
     parse: (tokens: CSSValue[]) => {
-        return tokens.filter(isStringToken).map(token => token.value);
+        const accumulator: string[] = [];
+        const results: string[] = [];
+        tokens.forEach(token => {
+            if (isStringToken(token)) {
+                accumulator.push(token.value);
+            }
+            if (token.type === TokenType.COMMA_TOKEN) {
+                results.push(`'${accumulator.join(' ')}'`);
+                accumulator.length = 0;
+            }
+        });
+        if (accumulator.length) {
+            results.push(`'${accumulator.join(' ')}'`);
+        }
+        return results;
     }
 };
 
